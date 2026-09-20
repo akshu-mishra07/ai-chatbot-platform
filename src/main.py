@@ -575,7 +575,12 @@ with tab2:
                 )
                 if gen_prompt and st.button("✨ Generate Image", key="btn_gen_img", use_container_width=True):
                     with st.spinner("Generating image with AI..."):
-                        gen_img = multimodal_engine.generate_image(gen_prompt)
+                        if hasattr(multimodal_engine, "generate_image"):
+                            gen_img = multimodal_engine.generate_image(gen_prompt)
+                        else:
+                            # Dynamic binding if stale cached instance
+                            from multimodal_engine import MultiModalEngine
+                            gen_img = MultiModalEngine.generate_image(multimodal_engine, gen_prompt)
                         if gen_img:
                             st.image(gen_img, caption=f"Generated: {gen_prompt}", use_container_width=True)
                             st.success("✅ Image generated successfully!")
