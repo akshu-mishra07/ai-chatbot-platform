@@ -331,64 +331,63 @@ class MultiModalEngine:
             logger.warning(f"Rejected unsafe prompt: {prompt}")
             return None
 
-        # 2. Contextual Prompt Enrichment via Gemini (if available)
+        # 2. Contextual Scene Synthesis via Gemini
         enhanced_prompt = prompt.strip()
         if self.available and self.model is not None:
             try:
                 sys_instruct = (
-                    "You are an expert prompt engineer for generative AI images. "
-                    "Convert the following user concept into a detailed, beautiful, highly accurate scene description.\n"
-                    "Rules:\n"
-                    "- Focus strictly on the exact concept, setting, subjects, and lighting.\n"
-                    "- Ensure the output is completely Safe For Work (SFW), professional, elegant, and appropriate for all ages.\n"
-                    "- Do NOT include any humans in inappropriate attire or explicit scenarios.\n"
-                    "- Keep it under 50 words, concise, comma-separated visual tags.\n"
-                    f"- Style: {style}.\n\n"
-                    f"User Concept: {prompt}\n\n"
-                    "Enhanced Prompt:"
+                    "You are a professional creative director and visual artist. "
+                    "Convert the following user request into a clear, natural, realistic scene description for image generation.\n"
+                    "Instructions:\n"
+                    "- Describe the subject, their clothing, the exact setting, background, and soft natural lighting.\n"
+                    "- The image MUST be strictly Safe For Work (SFW), respectful, fully clothed, professional, and elegant.\n"
+                    "- Write in 1 to 2 complete descriptive sentences. Do NOT output lists or tags.\n"
+                    f"- Desired style: {style}.\n\n"
+                    f"User Request: {prompt}\n\n"
+                    "Scene Description:"
                 )
                 gemini_resp = self.model.generate_content(sys_instruct)
                 if gemini_resp and gemini_resp.text:
                     candidate = gemini_resp.text.strip().replace("\n", " ")
-                    if len(candidate) > 10:
+                    if len(candidate) > 15:
                         enhanced_prompt = candidate
             except Exception as ge:
-                logger.warning(f"Prompt enhancement fallback to template: {ge}")
+                logger.warning(f"Gemini scene synthesis fallback: {ge}")
 
-        # 3. Append mandatory quality and safety guardrails
-        style_keywords = {
-            "photorealistic": "photorealistic, 8k resolution, cinematic lighting, ultra-detailed, professional photography",
-            "3d_render": "3d render, octane render, modern digital art, smooth geometry, clean lighting",
-            "digital_art": "digital painting, concept art, trending on artstation, vivid colors, crisp detail",
-            "illustration": "clean vector illustration, modern graphic design, vibrant, sharp lines",
+        # 3. Add clean style directive
+        style_directives = {
+            "photorealistic": "high quality DSLR photograph, natural lighting, sharp focus, 4k",
+            "3d_render": "modern 3D render, Pixar style, smooth textures, warm ambient lighting",
+            "digital_art": "detailed digital painting, concept art, rich color palette, cinematic",
+            "illustration": "clean modern editorial vector illustration, elegant minimalist design",
         }
-        style_tag = style_keywords.get(style, style_keywords["photorealistic"])
-        final_prompt = (
-            f"{enhanced_prompt}, {style_tag}, fully clothed, professional, safe for work, highly aesthetic, masterpiece"
-        )
+        directive = style_directives.get(style, style_directives["photorealistic"])
+        final_prompt = f"{enhanced_prompt}, {directive}, fully clothed, professional, SFW"
 
-        # 4. Fetch image with safe=true, enhance=true, nologo=true
+        # 4. Generate using FLUX model with randomized seed
+        import random
+        seed = random.randint(100, 999999)
         try:
             encoded = urllib.parse.quote(final_prompt.strip())
-            url = f"https://image.pollinations.ai/prompt/{encoded}?width={width}&height={height}&nologo=true&safe=true&enhance=true"
+            url = f"https://image.pollinations.ai/prompt/{encoded}?width={width}&height={height}&model=flux&nologo=true&seed={seed}"
             req = urllib.request.Request(
                 url,
-                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
             )
             with urllib.request.urlopen(req, timeout=35) as resp:
                 img_bytes = resp.read()
                 return Image.open(io.BytesIO(img_bytes))
         except Exception as e:
-            logger.error(f"Image generation request failed: {e}")
-            # Fallback with simplified prompt if enhanced prompt timed out
+            logger.error(f"FLUX generation failed ({e}); trying fallback...")
             try:
-                simple_prompt = f"{prompt.strip()}, high quality digital art, clean, safe for work, 4k"
-                fallback_url = f"https://image.pollinations.ai/prompt/{urllib.parse.quote(simple_prompt)}?width=512&height=512&nologo=true&safe=true"
+                # Fallback to standard diffusion with safe prompt
+                simple_prompt = f"{prompt.strip()}, professional photograph, clean, 4k, safe for work"
+                fallback_url = f"https://image.pollinations.ai/prompt/{urllib.parse.quote(simple_prompt)}?width={width}&height={height}&nologo=true&safe=true&seed={seed}"
                 req_fb = urllib.request.Request(fallback_url, headers={"User-Agent": "Mozilla/5.0"})
                 with urllib.request.urlopen(req_fb, timeout=25) as resp_fb:
                     return Image.open(io.BytesIO(resp_fb.read()))
             except Exception as fbe:
-                logger.error(f"Fallback image generation also failed: {fbe}")
+                logger.error(f"Fallback generation also failed: {fbe}")
                 return None
 
 
