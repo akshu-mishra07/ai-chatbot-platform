@@ -31,10 +31,6 @@ vaderSentiment>=3.3.2
 # Language Detection (Multilingual)
 langdetect>=1.0.9
 
-# NLP Utilities
-nltk>=3.8.0
-spacy>=3.5.0
-
 # Data Visualization
 plotly>=5.15.0
 
