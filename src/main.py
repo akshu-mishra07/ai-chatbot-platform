@@ -231,7 +231,6 @@ def get_kb_manager():
         )
     return None
 
-@st.cache_resource
 def get_multimodal_engine():
     if MULTIMODAL_AVAILABLE:
         return MultiModalEngine()
@@ -595,16 +594,16 @@ with tab2:
 
                 if gen_prompt and st.button("✨ Generate Image", key="btn_gen_img", use_container_width=True):
                     with st.spinner("Synthesizing context-accurate image with Generative AI..."):
-                        if hasattr(multimodal_engine, "generate_image"):
-                            gen_img = multimodal_engine.generate_image(gen_prompt, style=img_style)
-                        else:
-                            from multimodal_engine import MultiModalEngine
-                            gen_img = MultiModalEngine.generate_image(multimodal_engine, gen_prompt, style=img_style)
+                        # Direct call on engine or fresh instance
+                        from multimodal_engine import MultiModalEngine
+                        current_engine = multimodal_engine if isinstance(multimodal_engine, MultiModalEngine) else MultiModalEngine()
+                        gen_img = current_engine.generate_image(gen_prompt, style=img_style)
                         if gen_img:
                             st.image(gen_img, caption=f"Generated ({img_style}): {gen_prompt}", use_container_width=True)
                             st.success("✅ Image generated successfully with safety and quality guardrails!")
                         else:
                             st.error("❌ Failed to generate image. Please ensure prompt is safe and try again.")
+
 
 
         else:
