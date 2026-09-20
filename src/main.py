@@ -582,15 +582,6 @@ with tab2:
                         key="gen_img_style"
                     )
 
-                # Context-aware quick prompt suggestions
-                st.caption("💡 **Quick Educational & Customer Service Prompts:**")
-                p_col1, p_col2, p_col3 = st.columns(3)
-                if p_col1.button("🤖 AI Support Robot", key="p_robot", use_container_width=True):
-                    gen_prompt = "A friendly humanoid AI support robot sitting at a customer care desk in a modern tech office"
-                if p_col2.button("💻 Student Coding Lab", key="p_coding", use_container_width=True):
-                    gen_prompt = "Students collaborating in a high-tech computer programming laboratory with code on monitors"
-                if p_col3.button("🎓 Internship Certificate", key="p_cert", use_container_width=True):
-                    gen_prompt = "A gold-embossed graduation certificate and laptop celebrating course completion"
 
                 if gen_prompt and st.button("✨ Generate Image", key="btn_gen_img", use_container_width=True):
                     with st.spinner("Synthesizing context-accurate image with Generative AI..."):
