@@ -1,0 +1,362 @@
+[
+  {
+    "id": "2103.04891",
+    "title": "Contextual Disambiguation via Dense Morphological Embeddings in Low-Resource Languages",
+    "abstract": "Natural language processing for low-resource languages often suffers from sparse lexical representations and morphosyntactic ambiguity. In this paper, we propose MorphoDense, a novel framework combining dense morphological sub-word embeddings with character-level convolutional feature extractors. We evaluate our method across 14 typologically diverse low-resource languages under standardized cross-lingual transfer protocols. Extensive empirical evaluations demonstrate that our architecture outperforms prevailing multilingual baselines by 4.8 F1 points on named entity recognition and dependency parsing.",
+    "authors": ["Elena Rostova", "Kavita Raman", "Marcus Vance"],
+    "categories": ["cs.CL", "cs.AI"],
+    "year": 2021,
+    "key_findings": "MorphoDense achieves state-of-the-art token-level representations for low-resource agglutinative languages by effectively capturing sub-word morphological variations. It demonstrates a 4.8 point improvement in downstream F1 scores without requiring additional bilingual lexicons."
+  },
+  {
+    "id": "2205.11204",
+    "title": "Self-Supervised Contrastive Sentence Representations with Adaptive Hard Negative Mining",
+    "abstract": "Sentence representation learning remains foundational for semantic textual similarity, clustering, and retrieval tasks. Prevailing contrastive learning methods often struggle due to uninformative negative samples or false negatives in mini-batches. We introduce ContrastSim, an adaptive hard negative mining objective that leverages latent margin scaling based on mutual information bounds. Experiments on the STS Benchmark and SentEval transfer tasks show substantial gains across unsupervised and semi-supervised settings.",
+    "authors": ["David Chen", "Amina Al-Mansoor", "Julian Richter"],
+    "categories": ["cs.CL", "cs.LG"],
+    "year": 2022,
+    "key_findings": "Adaptive hard negative mining with dynamic margins prevents representation collapse and significantly improves semantic similarity benchmarking by 3.2% Spearman correlation over SimCSE."
+  },
+  {
+    "id": "2308.07219",
+    "title": "Cross-Lingual Information Extraction via Knowledge Graph-Guided Prompt Tuning",
+    "abstract": "Extracting structured relational facts across multiple languages poses significant challenges due to divergent syntax and entity typing conventions. We present KG-Prompt, a parameter-efficient prompt tuning framework that conditions multilingual pre-trained encoders on structural graph embeddings. By injecting multilingual knowledge graph triplets into prefix tuning prompts, our method aligns cross-lingual semantic representations in low-shot regimes. Evaluations on CrossRE and TACRED multilingual benchmarks demonstrate robust transferability with under 1% trainable parameters.",
+    "authors": ["Hiroshi Tanaka", "Sarah Jenkins", "Mateo Gomez", "Fatima Zahra"],
+    "categories": ["cs.CL", "cs.AI", "cs.DB"],
+    "year": 2023,
+    "key_findings": "Integrating knowledge-graph structural priors directly into soft prompts enables zero-shot relation extraction across 8 languages with an average F1 gain of 5.6 points over conventional prompt tuning."
+  },
+  {
+    "id": "2402.13840",
+    "title": "Robust Dialogue State Tracking under Extreme Lexical Noise and Turn Reordering",
+    "abstract": "Spoken dialogue systems in production environments must cope with speech recognition errors, user corrections, and conversational turn reorderings. We introduce RobustDST, a dialogue state tracking architecture equipped with bidirectional slot-token attention and permutation-invariant belief tracking. We validate our model on MultiWOZ 2.4 and a newly collected noisy spoken dialogue benchmark, demonstrating superior resilience to acoustic distortions. Our findings show that decoupling turn order dependencies prevents catastrophic belief drift across multi-domain conversations.",
+    "authors": ["Lucas Schmidt", "Priya Nair", "Alexander Petrov"],
+    "categories": ["cs.CL", "cs.HC"],
+    "year": 2024,
+    "key_findings": "Permutation-invariant state tracking reduces cumulative error propagation in multi-turn dialogues by 14.3% in joint goal accuracy under high acoustic error conditions."
+  },
+  {
+    "id": "2011.08923",
+    "title": "Multi-Scale Spatiotemporal Feature Aggregation for Fine-Grained Video Action Recognition",
+    "abstract": "Fine-grained action recognition requires capturing subtle spatial details alongside complex temporal dynamics across variable temporal receptive fields. We present TemporalScaleNet, a dual-pathway convolutional-recurrent network that decomposes video streams into decoupled high-frequency spatial motion and low-frequency contextual cues. Our adaptive temporal gating module dynamically allocates computation to visually informative frames. Benchmarking on Kinetics-400 and Something-Something V2 shows top-tier accuracy while reducing floating-point operations by 28%.",
+    "authors": ["Wei Zhang", "Camilla Rossi", "Antoine Dubois"],
+    "categories": ["cs.CV", "cs.AI"],
+    "year": 2020,
+    "key_findings": "Decomposing motion into multiscale temporal pathways cuts compute requirements by 28% while outperforming standard 3D CNNs by 2.1% top-1 accuracy on Something-Something V2."
+  },
+  {
+    "id": "2209.04351",
+    "title": "Unsupervised Open-Vocabulary Semantic Segmentation via Vision-Language Alignment",
+    "abstract": "Traditional semantic segmentation models are constrained to pre-defined closed label sets, limiting their utility in open-world environments. We propose OpenSeg-Align, an unsupervised framework that distills regional feature representations from vision-language foundation models into pixel-level segmentation maps. Through a self-training clustering mechanism and prompt-guided mask refinement, our method segments arbitrary object categories without pixel-level annotations. Extensive experiments on COCO-Stuff and ADE20K confirm state-of-the-art zero-shot segmentation performance.",
+    "authors": ["Min-Ji Kim", "Carlos Hernandez", "Laura Becker", "Anand Iyer"],
+    "categories": ["cs.CV", "cs.LG"],
+    "year": 2022,
+    "key_findings": "Region-to-text alignment enables pixel-level zero-shot open-vocabulary segmentation with a 6.4% mIoU increase on ADE20K over previous unsupervised distillation baselines."
+  },
+  {
+    "id": "2304.09872",
+    "title": "Dynamic Neural Radiance Fields for Real-Time Novel View Synthesis of Deformable Objects",
+    "abstract": "Novel view synthesis of highly dynamic, non-rigidly deforming scenes poses severe challenges for implicit neural representations due to temporal aliasing and slow rendering speeds. We propose DynaNeRF-RT, a fast deformation field formulation based on factored tri-plane orthogonal representations coupled with lightweight spatial hash grids. Our continuous deformation mapping decouples canonical scene geometry from dynamic motion trajectories. DynaNeRF-RT achieves over 45 frames per second rendering at 1080p resolution while maintaining photorealistic reconstruction fidelity.",
+    "authors": ["Simon Lefebvre", "Zhiqiang Liu", "Maya Lin"],
+    "categories": ["cs.CV", "cs.GR"],
+    "year": 2023,
+    "key_findings": "Factored tri-plane representation with hash-encoded deformation fields accelerates dynamic NeRF rendering to real-time speeds (>45 FPS) without compromising visual quality."
+  },
+  {
+    "id": "2404.03215",
+    "title": "Self-Calibrating Monocular 3D Object Detection in Adverse Weather Conditions",
+    "abstract": "Monocular 3D bounding box estimation degrades severely when operating in degraded visual environments such as heavy rain, fog, and nighttime conditions. We propose WeatherGuard-3D, a monocular 3D detector that integrates depth-uncertainty distillation and physical light scattering models directly into the visual backbone. An online self-calibration head predicts camera distortion parameters and ambient atmospheric attenuation coefficients on the fly. Comprehensive tests on the nuScenes and DAWN datasets exhibit robust localization accuracy in extreme weather.",
+    "authors": ["Tobias Meyer", "Arjun Srinivasan", "Olga Ivanova"],
+    "categories": ["cs.CV", "cs.RO"],
+    "year": 2024,
+    "key_findings": "Integrating physical light attenuation models with monocular 3D estimation improves 3D bounding box Average Precision (AP3D) by 8.7% in fog and low-light autonomous driving scenes."
+  },
+  {
+    "id": "2106.15432",
+    "title": "Sample-Efficient Model-Based Reinforcement Learning via Epistemic Uncertainty Ensembles",
+    "abstract": "Model-based reinforcement learning offers the promise of superior sample efficiency, yet it frequently suffers from model bias and policy exploitation of inaccurate dynamics. In this work, we introduce EpiMBRL, a sample-efficient algorithm that utilizes bootstrapped neural network ensembles to quantify epistemic transition uncertainty. By incorporating uncertainty-aware trajectory rollouts into model predictive control, the agent safely explores high-variance regions while avoiding catastrophic model exploitation. Benchmarks across continuous control suites (MuJoCo and DMC) demonstrate rapid convergence matching asymptotic model-free performance.",
+    "authors": ["Liam O'Connor", "Sergei Voronov", "Mei-Ling Zhou"],
+    "categories": ["cs.LG", "cs.AI", "cs.RO"],
+    "year": 2021,
+    "key_findings": "Explicitly penalizing policy rollouts in regions of high epistemic uncertainty improves sample efficiency by 3x compared to PETS and SAC on MuJoCo benchmarks."
+  },
+  {
+    "id": "2207.08119",
+    "title": "Offline Reinforcement Learning with Conservative Value Regularization and Latent Skill Priors",
+    "abstract": "Learning effective policies strictly from fixed, non-interactive offline datasets is hindered by distributional shift and out-of-distribution action overestimation. We introduce Skill-CQL, a framework that constrains policy optimization within a learned low-dimensional latent skill manifold while penalizing out-of-distribution state-action values. By regularizing value estimates against a probabilistic skill prior, the agent composes long-horizon trajectories without leaving the data support. We demonstrate state-of-the-art score distributions on the D4RL benchmark suite.",
+    "authors": ["Gabriel Santos", "Hannah Weiss", "Kenji Takahashi"],
+    "categories": ["cs.LG", "cs.AI"],
+    "year": 2022,
+    "key_findings": "Combining conservative Q-learning with latent skill manifolds enables stable long-horizon planning and achieves a 22% improvement in average score across D4RL sparse-reward environments."
+  },
+  {
+    "id": "2311.02564",
+    "title": "Multi-Agent Reinforcement Learning via Dynamic Graph Attention Communication Protocols",
+    "abstract": "Coordinating decentralized agents in cooperative multi-agent reinforcement learning (MARL) requires efficient, bandwidth-constrained communication. We present DyGAC-MARL, an architecture that dynamically constructs directional communication topologies using sparse multi-head graph attention networks. Agents learn to selectively broadcast perceptual embeddings and intent messages only to task-relevant neighbors. Evaluations on StarCraft Multi-Agent Challenge (SMAC) and cooperative navigation environments reveal superior team coordination and substantial reduction in message overhead.",
+    "authors": ["Dmitry Smirnov", "Ananya Deshmukh", "Florian Weber", "Rachel Scott"],
+    "categories": ["cs.MA", "cs.AI", "cs.LG"],
+    "year": 2023,
+    "key_findings": "Sparse dynamic graph attention drops inter-agent communication bandwidth by 65% while increasing win rates on challenging SMAC super-hard maps by 11.4%."
+  },
+  {
+    "id": "2401.07722",
+    "title": "Provably Safe Reinforcement Learning with Differentiable Control Barrier Functions",
+    "abstract": "Deploying reinforcement learning agents into safety-critical physical systems demands hard guarantees on state-space constraint satisfaction. We propose SafeBarrier-RL, an end-to-end differentiable reinforcement learning framework that integrates neural Control Barrier Functions (CBFs) into the policy optimization layer. The differentiable barrier formulation projects potentially unsafe exploratory actions onto forward-invariant safe control sets during both training and deployment. We prove theoretical safety certificates and demonstrate zero constraint violations across robotic navigation and quadrotor control.",
+    "authors": ["Klaus Mueller", "Siddharth Verma", "Nadia Benali"],
+    "categories": ["cs.RO", "cs.AI", "cs.SY"],
+    "year": 2024,
+    "key_findings": "Differentiable Control Barrier Functions provide formal safety guarantees with zero constraint violations during end-to-end training and inference on physical robotic benchmarks."
+  },
+  {
+    "id": "2104.09864",
+    "title": "Linearized Attention via Orthogonal Random Feature Decomposition for Long-Sequence Modeling",
+    "abstract": "The quadratic computational and memory complexity of standard self-attention mechanisms severely limits transformer scalability to long sequences. We present OrthoLinear-Attention, a linearized attention method that computes exact kernel approximations using positive orthogonal random features. Our mathematical formulation guarantees non-negative attention weights while bounding variance across sequence lengths up to 64,000 tokens. Extensive benchmarks on the Long Range Arena (LRA) establish substantial speedups and memory reductions with negligible performance degradation.",
+    "authors": ["Arthur Pendelton", "Guang Wang", "Sofia Martinez"],
+    "categories": ["cs.LG", "cs.CL"],
+    "year": 2021,
+    "key_findings": "Positive orthogonal random feature decomposition achieves true O(N) computational complexity for transformers while preserving attention score stability up to 64K token context lengths."
+  },
+  {
+    "id": "2203.15542",
+    "title": "Adaptive Hierarchical Routing in Mixture-of-Experts Vision Transformers",
+    "abstract": "Scaling vision transformers via Mixture-of-Experts (MoE) provides enormous parameter capacity but often leads to expert routing imbalance and high memory footprint. We introduce Hierarchical-VMoE, a routing paradigm that arranges expert neural modules in a two-level hierarchical cluster topology. Token representations are dynamically routed first to high-level semantic clusters and subsequently to fine-grained visual specialized experts. On ImageNet-1K and ImageNet-22K classification, our approach achieves higher validation accuracy than dense Vision Transformers with 40% lower training FLOPs.",
+    "authors": ["Yingjie Zhao", "Marc Bernard", "Suresh Pillai"],
+    "categories": ["cs.CV", "cs.LG"],
+    "year": 2022,
+    "key_findings": "Hierarchical expert routing prevents representation collapse in vision MoE models, yielding a 1.7% ImageNet-1K accuracy gain over vanilla top-2 token routing."
+  },
+  {
+    "id": "2306.14298",
+    "title": "FlashState: Low-Rank State-Space Hybrid Attention for Ultra-Long Sequence Processing",
+    "abstract": "Combining state-space models (SSMs) with transformer self-attention offers a promising pathway for modeling million-token dependencies. We present FlashState, a hybrid architecture that interleaves selective state-space layers with low-rank gated attention blocks. We derive hardware-efficient CUDA kernels that fuse scan and attention operations directly in GPU SRAM, bypassing memory bandwidth bottlenecks. FlashState achieves a 5x throughput increase over FlashAttention-2 on 128k sequence lengths across synthetic recall, genomic analysis, and document QA.",
+    "authors": ["Benjamin Klein", "Ariel Cohen", "Rohan Joshi", "Zoe Moreau"],
+    "categories": ["cs.LG", "cs.AI", "cs.CL"],
+    "year": 2023,
+    "key_findings": "Fusing selective state-space dynamics with low-rank attention provides sub-quadratic memory complexity and 5x inference throughput acceleration on 128k token contexts."
+  },
+  {
+    "id": "2405.01183",
+    "title": "Quantization-Aware Training for Transformer Architectures with Outlier-Resistant Activation Smoothing",
+    "abstract": "Post-training quantization of multi-billion parameter transformers to 4-bit and 2-bit precisions typically suffers catastrophic degradation due to high-magnitude activation outliers. In this paper, we introduce SmoothQuant-QAT, a quantization-aware training framework that applies channel-wise mathematical scaling transformations before linear projections. By dynamically redistributing dynamic ranges across weight and activation matrices, the model suppresses outlier emergence during backpropagation. We demonstrate lossless 4-bit quantization on Llama-3 and Mistral architectures with zero task degradation.",
+    "authors": ["Clara Engel", "Hao Tian", "Emilio Gomez"],
+    "categories": ["cs.LG", "cs.AI"],
+    "year": 2024,
+    "key_findings": "Outlier-resistant activation smoothing enables lossless INT4 training and INT2 weight-only inference across large transformer foundation models without perplexity degradation."
+  },
+  {
+    "id": "2210.06321",
+    "title": "Instruction Fine-Tuning of Large Language Models via Multi-Task Curriculum Distillation",
+    "abstract": "Instruction tuning enhances the zero-shot generalization capabilities of large language models across unseen user prompts and complex instructions. We propose CurricuDistill, a multi-task synthetic instruction tuning methodology that sequences training tasks by syntactic complexity and reasoning depth. Using high-capacity teacher models to generate verifiable step-by-step reasoning chains, we fine-tune compact 7B-parameter models. Our resulting models achieve performance parity with 70B parameter baseline models on standard reasoning benchmarks such as GSM8k and BBH.",
+    "authors": ["Devon Vance", "Nalini Krishnan", "Thierry Laurent"],
+    "categories": ["cs.CL", "cs.AI", "cs.LG"],
+    "year": 2022,
+    "key_findings": "Curriculum-ordered synthetic instruction distillation allows a 7B parameter LLM to match the mathematical and logical reasoning capabilities of a 70B teacher model."
+  },
+  {
+    "id": "2302.08945",
+    "title": "Self-Reflective Tree-of-Thought Reasoning with Autonomous Feedback Loops in LLMs",
+    "abstract": "Standard autoregressive decoding in large language models lacks the capability to explore alternative reasoning branches or self-correct logical dead-ends. We introduce TreeReflect, a framework that constructs tree-structured reasoning paths evaluated through autonomous self-reflective verification tokens. The system systematically evaluates intermediate premises, prunes inconsistent deductions, and backtracks to previously explored nodes. Empirical testing across MATH, ARC-Challenge, and CodeX shows double-digit percentage gains over Chain-of-Thought prompting.",
+    "authors": ["Xin Ran", "Miriam Al-Khatib", "Lucas Dubois"],
+    "categories": ["cs.AI", "cs.CL"],
+    "year": 2023,
+    "key_findings": "Autonomous tree-search reasoning with self-reflective backtracking improves competitive mathematical problem-solving accuracy from 42% to 67% on the MATH dataset."
+  },
+  {
+    "id": "2312.04519",
+    "title": "Retrieval-Augmented Generation with Active Hallucination Detection and Source Attribution",
+    "abstract": "While retrieval-augmented generation (RAG) grounds language models in external documents, hallucination and hallucinated attributions remain prevalent failure modes. We present ActiveRAG, a verification-integrated RAG system that dynamically computes token-level source attribution scores during sentence generation. When source confidence drops below calibrated thresholds, the model issues targeted micro-queries to verify or correct factual claims before token emission. Benchmarking on FactScore and KILT shows a 78% reduction in unverified hallucinations.",
+    "authors": ["Siddharth Rao", "Evelyn Reed", "Chao Feng", "Maya Hansen"],
+    "categories": ["cs.CL", "cs.IR", "cs.AI"],
+    "year": 2023,
+    "key_findings": "Active inline token-attribution and dynamic verification queries reduce factual hallucinations in RAG pipelines by 78% while providing exact source grounding."
+  },
+  {
+    "id": "2403.09912",
+    "title": "Speculative Speculative Decoding: Multi-Draft Parallel Verification for High-Throughput LLM Inference",
+    "abstract": "Autoregressive generation in large language models is fundamentally memory-bandwidth bound due to serial token-by-token execution. We introduce MultiDraft-Spec, an enhanced speculative decoding framework that executes multiple draft model rollouts in parallel using candidate tree pruning. By formulating target model verification as a parallel tensor operation with speculative masks, we verify up to 8 candidate tokens in a single forward pass. Real-world deployment on conversational serving systems shows a 3.4x wall-clock speedup without modifying output probability distributions.",
+    "authors": ["Jonas Lindqvist", "Deepa Mohan", "Julian Ebers"],
+    "categories": ["cs.CL", "cs.LG", "cs.DC"],
+    "year": 2024,
+    "key_findings": "Parallel multi-draft speculative decoding achieves 3.4x inference acceleration with mathematically guaranteed adherence to the target model's exact sampling distribution."
+  },
+  {
+    "id": "2108.05312",
+    "title": "Continuous-Time Score-Based Generative Modeling via Latent Stochastic Differential Equations",
+    "abstract": "Score-based diffusion models have transformed generative modeling across modalities, yet high-resolution synthesis requires thousands of discretization steps. In this work, we propose Latent-SDE, a framework that integrates score matching directly into low-dimensional latent Riemannian manifolds governed by continuous-time stochastic differential equations. Our formulation enables high-order adaptive step-size Runge-Kutta numerical solvers to traverse the reverse diffusion trajectory efficiently. On FFHQ and LSUN datasets, Latent-SDE achieves FID scores under 2.5 with only 25 sampling steps.",
+    "authors": ["Nikolai Sidorov", "Camille Dupont", "Farhan Qureshi"],
+    "categories": ["cs.LG", "cs.CV", "cs.AI"],
+    "year": 2021,
+    "key_findings": "Formulating score-based diffusion over Riemannian latent manifolds reduces required sampling steps by 90% while achieving state-of-the-art FID scores on 1024x1024 image synthesis."
+  },
+  {
+    "id": "2211.14321",
+    "title": "Controllable Text-to-3D Synthesis using Multi-View Diffusion and Differentiable Geometry Refinement",
+    "abstract": "Generating high-fidelity 3D meshes from natural language prompts is challenging due to multiview inconsistencies and the dreaded 'Janus' multi-face problem. We present 3D-GenForge, a dual-stage text-to-3D pipeline that leverages score distillation sampling coupled with explicit multi-view synchronized diffusion priors. In the second stage, an explicit neural surface mesh is refined using differentiable geometry operators and view-conditioned depth constraints. Extensive user studies and quantitative geometry metrics validate that 3D-GenForge produces photorealistic, manifold-clean 3D assets.",
+    "authors": ["Alice Cooper", "Bao Nguyen", "Matthias Schwarz", "Leila Haddad"],
+    "categories": ["cs.CV", "cs.GR", "cs.AI"],
+    "year": 2022,
+    "key_findings": "Synchronized multi-view diffusion priors eliminate the Janus problem in text-to-3D synthesis and generate fully textured 3D meshes with clean polygonal topology."
+  },
+  {
+    "id": "2309.07844",
+    "title": "Consistency Flow Matching for Instantaneous High-Fidelity Audio Synthesis",
+    "abstract": "Generative audio synthesis requires modeling high sampling rates and complex harmonic dependencies, making traditional autoregressive or diffusion models computationally prohibitive for real-time applications. We propose AudioFlow-CM, which marries optimal transport flow matching with consistency distillation objectives for direct one-step acoustic waveform synthesis. Our continuous vector field parametrization allows our generator to synthesize 48kHz stereo audio in a single neural network forward pass. Benchmarks on AudioSet and MusicCaps demonstrate superior fidelity and realism compared to multi-step diffusion baselines.",
+    "authors": ["Gabriel Monnier", "Pooja Hegde", "Vincent Morel"],
+    "categories": ["cs.SD", "cs.LG", "cs.AI"],
+    "year": 2023,
+    "key_findings": "Consistency flow matching enables single-step 48kHz audio generation operating at 120x real-time speed with higher perceptual audio quality than 100-step diffusion models."
+  },
+  {
+    "id": "2404.16789",
+    "title": "Latent World Models for Controllable Video Generation with Physics-Informed Dynamics",
+    "abstract": "Existing video generation models frequently hallucinate implausible physical dynamics such as object interpenetration and unrealistic fluid mechanics. We propose PhysWorld, a video generation framework that enforces physical conservation laws within a latent world model architecture. By embedding Lagrangian mechanics constraints and Hamiltonian vector fields into the temporal attention layers, our model generates temporally consistent videos over extended horizons. Comprehensive evaluations on synthetic physics benchmarks (Phyre, RealWorldQA) demonstrate remarkable dynamic coherence.",
+    "authors": ["Kenji Sato", "Alina Popescu", "Derrick Washington"],
+    "categories": ["cs.CV", "cs.AI", "cs.LG"],
+    "year": 2024,
+    "key_findings": "Embedding Hamiltonian conservation priors into latent video generators reduces physical consistency violations by 63% and enables realistic long-horizon video simulation."
+  },
+  {
+    "id": "2012.03456",
+    "title": "Equivariant Graph Neural Networks for Molecular Conformation Generation and Property Prediction",
+    "abstract": "Accurate modeling of 3D molecular structures requires graph neural networks that respect Euclidean symmetries including 3D rotations, translations, and reflections. We present E3-GNN, an E(n)-equivariant graph neural network that updates atom coordinate vectors and scalar node features simultaneously without expensive spherical harmonic computations. We prove exact theoretical equivariance under continuous rigid transformations. Empirical evaluations on QM9 and MD17 benchmarks demonstrate state-of-the-art accuracy in molecular potential energy and dipole moment predictions.",
+    "authors": ["Johannes Faust", "Ling Zhang", "Mateusz Kowalski"],
+    "categories": ["cs.LG", "physics.chem-ph", "cs.AI"],
+    "year": 2020,
+    "key_findings": "Exact E(n)-equivariance without spherical harmonics yields 4x faster computation while cutting molecular property prediction errors on QM9 by 31%."
+  },
+  {
+    "id": "2204.08901",
+    "title": "Scalable Graph Neural Networks on Billion-Scale Graphs via Dynamic Subgraph Sampling",
+    "abstract": "Training deep graph neural networks on massive industrial graphs encounters severe memory bottlenecks and the infamous neighbor explosion problem during neighborhood aggregation. We introduce GraphScale, a distributed graph training framework that utilizes variance-reduced adaptive subgraph sampling and lazy node feature cache invalidation. GraphScale optimizes memory access patterns across GPU clusters to parallelize message passing over graphs containing billions of nodes and hundreds of billions of edges. Benchmarking on the OGB-MAG240M dataset demonstrates linear scaling across 64 GPUs.",
+    "authors": ["Raghavan Iyer", "Estelle Dupont", "Chen Wei", "Marta Rossi"],
+    "categories": ["cs.LG", "cs.DC", "cs.DB"],
+    "year": 2022,
+    "key_findings": "Adaptive subgraph sampling with lazy cache updates achieves linear scaling on billion-node graphs, reducing training wall-clock time from 18 hours to 42 minutes."
+  },
+  {
+    "id": "2305.12390",
+    "title": "Mitigating Over-Smoothing and Over-Squashing in Deep GNNs with Curvature-Aware Rewiring",
+    "abstract": "Deep Graph Neural Networks suffer from informational bottlenecks: over-smoothing causes node representations to collapse into uniform vectors, while over-squashing prevents information flow across graph bottlenecks. We propose Ricci-Rewire, an architectural framework that computes discrete Ollivier-Ricci curvatures across edges to guide dynamic topology rewiring. By selectively pruning edges with extreme negative Ricci curvature and introducing non-local shortcut edges, information flow is maintained across high graph depths. Experiments across 10 benchmark datasets confirm effective training of 64-layer GNN architectures.",
+    "authors": ["Alessio Conti", "Nisha Patel", "Henrik Lindholm"],
+    "categories": ["cs.LG", "cs.SI", "cs.AI"],
+    "year": 2023,
+    "key_findings": "Ricci-curvature-guided graph rewiring enables the stable training of 64-layer GNNs, overcoming both over-smoothing and over-squashing with a 9.2% accuracy boost on long-range graphs."
+  },
+  {
+    "id": "2402.04567",
+    "title": "Temporal Dynamic Hypergraph Neural Networks for Complex Higher-Order Interaction Modeling",
+    "abstract": "Many real-world networks exhibit complex polyadic interactions evolving over continuous time, which cannot be accurately represented by simple pairwise graphs. We present TempHyperNet, a continuous-time temporal hypergraph neural network that processes multi-node interactions via causal hyperedge message passing. A time-decay Hawkes process module captures event burstiness and historical recurrence across higher-order hyperedges. Tests on social networks, financial transaction graphs, and co-authorship datasets establish superior link and hyperedge prediction accuracy.",
+    "authors": ["Min-Woo Park", "Tariq Mansour", "Sylvia Vance"],
+    "categories": ["cs.SI", "cs.LG", "cs.AI"],
+    "year": 2024,
+    "key_findings": "Modeling polyadic interactions through temporal Hawkes hypergraph attention yields a 14.5% improvement in dynamic higher-order event prediction over pairwise temporal GNNs."
+  },
+  {
+    "id": "2102.07891",
+    "title": "Communication-Efficient Federated Learning with Provable Differential Privacy and Byzantine Robustness",
+    "abstract": "Federated learning enables decentralized model training across distributed clients, but it remains susceptible to malicious poisoning attacks and communication bottlenecks. We introduce RobustPriv-FL, a unified framework combining top-k gradient sparsification, dynamic local clipping, and geometric median aggregation. We provide formal theoretical proofs establishing (epsilon, delta)-differential privacy guarantees alongside Byzantine fault tolerance under up to 30% malicious adversary participation. Extensive experiments across non-IID distributed image and language datasets demonstrate exceptional convergence and privacy preservation.",
+    "authors": ["Arthur Pendelton", "Leila Haddad", "Victor Voronin"],
+    "categories": ["cs.LG", "cs.CR", "cs.DC"],
+    "year": 2021,
+    "key_findings": "RobustPriv-FL simultaneously provides differential privacy and 30% Byzantine attack resilience while reducing client-to-server uplink communication volume by 92%."
+  },
+  {
+    "id": "2208.05612",
+    "title": "Personalized Federated Learning via Meta-Learned Client-Specific Subspace Projections",
+    "abstract": "Statistical heterogeneity (non-IID data distribution) among participating clients causes severe client drift and poor generalization in traditional federated averaging. We propose MetaSub-FL, a personalized federated learning algorithm where clients share a low-dimensional global representation subspace while maintaining private local projection heads. A model-agnostic meta-learning update step trains the global subspace to adapt to local data distributions in single-step gradient updates. Comprehensive evaluation on heterogeneous benchmarks demonstrates marked improvements in personalized client test accuracy.",
+    "authors": ["Sonia Kapoor", "Janusz Kowal", "Frederik Nielsen"],
+    "categories": ["cs.LG", "cs.AI"],
+    "year": 2022,
+    "key_findings": "Meta-learned shared subspace projection mitigates client drift, boosting personalized test accuracy by 8.4% across highly skewed non-IID Dirichlet partition benchmarks."
+  },
+  {
+    "id": "2307.03456",
+    "title": "Asynchronous Federated Learning for Edge Computing with Adaptive Staleness Compensation",
+    "abstract": "Synchronous federated learning suffers from straggler bottlenecks when deployed across edge and IoT devices with highly variable compute capacities and network latencies. We propose AsyncEdge-FL, an asynchronous federated learning system featuring an adaptive staleness-compensation weighting function and tier-based client grouping. By dynamically discounting delayed gradient updates using curvature-aware second-order approximations, the global server prevents model divergence. Real-world edge testbed evaluations demonstrate a 4.2x reduction in overall time-to-accuracy.",
+    "authors": ["Guillaume Roux", "Deepa Mohan", "Stefan Radic", "Fatima Zahra"],
+    "categories": ["cs.DC", "cs.LG", "cs.NI"],
+    "year": 2023,
+    "key_findings": "Curvature-aware staleness compensation allows asynchronous edge federated training to converge 4.2x faster than synchronous FedAvg without loss of final accuracy."
+  },
+  {
+    "id": "2406.01234",
+    "title": "Cross-Silo Federated Foundation Model Adaptation via Parameter-Efficient Secure Enclaves",
+    "abstract": "Fine-tuning foundation models in regulated cross-silo domains (such as healthcare and finance) requires stringent data privacy and intellectual property protections. We introduce Enclave-FedLoRA, a secure federated framework that combines low-rank adaptation (LoRA) with hardware-assisted trusted execution environments (TEEs). Clients collaboratively optimize adapter weights within secure enclaves while raw activations and proprietary weights remain cryptographically isolated. Benchmarking on multi-institutional clinical NLP tasks demonstrates that Enclave-FedLoRA achieves performance identical to centralized fine-tuning with near-zero memory overhead.",
+    "authors": ["Hanna Lindqvist", "Marcus Vance", "Kavita Raman"],
+    "categories": ["cs.CR", "cs.LG", "cs.CL"],
+    "year": 2024,
+    "key_findings": "Combining LoRA parameter-efficient adapters with TEE hardware enclaves enables secure cross-institution foundation model fine-tuning with 99.8% performance preservation."
+  },
+  {
+    "id": "2109.04321",
+    "title": "Adversarial Robustness via Certified Randomized Smoothing with Adaptive Noise Ensembles",
+    "abstract": "Deep neural networks remain vulnerable to adversarial perturbations that can trigger high-confidence misclassifications. We introduce AdaSmooth, a certified defense method that generalizes randomized smoothing using input-adaptive covariance noise distributions. Unlike isotropic Gaussian smoothing, our approach dynamically contours noise distributions to match the local Riemannian geometry of the data manifold. We derive rigorous theoretical lower bounds on certified L2 and L-infinity radii, achieving certified accuracy gains of 11.2% over standard smoothing benchmarks.",
+    "authors": ["Maximilian Bauer", "Yuki Tanaka", "Claire Dubois"],
+    "categories": ["cs.LG", "cs.CR", "cs.AI"],
+    "year": 2021,
+    "key_findings": "Adaptive manifold-conforming noise injection expands certified adversarial robustness radii by 11.2% on ImageNet against L2 and L-infinity perturbation attacks."
+  },
+  {
+    "id": "2212.09876",
+    "title": "Eliciting Latent Knowledge and Preventing Goal Misgeneralization in Autonomous Agents",
+    "abstract": "As reinforcement learning agents are deployed in complex environments, goal misgeneralization occurs when agents pursue unintended proxy rewards in novel test scenarios. We propose Latent-ELK, a mechanistic interpretability protocol that isolates the internal world representation of an agent from its optimization objectives. By probing latent activations with consistency probes across causal interventions, our framework detects when policy decisions decouple from intended behavioral goals. Empirical validations in Gridworld and Procgen show early pre-emption of deceptive alignment behaviors.",
+    "authors": ["Nathaniel Wright", "Aisha Al-Mansoori", "Felix Gruber"],
+    "categories": ["cs.AI", "cs.LG"],
+    "year": 2022,
+    "key_findings": "Internal latent consistency probing accurately detects 91% of goal misgeneralization and deceptive alignment states prior to catastrophic agent failure."
+  },
+  {
+    "id": "2310.05432",
+    "title": "Jailbreak-Resistant Alignment via Activation Steering and Representation Scrubbing in LLMs",
+    "abstract": "Safety alignment in large language models via RLHF remains vulnerable to sophisticated prompt-injection and multi-token jailbreaking attacks. We introduce ShieldVector, an inference-time safety mechanism that maps harmful semantic directions within intermediate residual streams. When a jailbreak attempt activates unsafe latent concepts, ShieldVector subtracts the corresponding refusal direction vector to steer generation toward safe responses without degrading benign capabilities. Extensive red-teaming evaluations on AdvGLUE and HarmBench confirm greater than 96% defense efficacy.",
+    "authors": ["Prashant Nair", "Eleanor Davies", "Siddharth Rao", "Jian Wang"],
+    "categories": ["cs.CL", "cs.CR", "cs.AI"],
+    "year": 2023,
+    "key_findings": "Residual-stream activation steering neutralizes 96.4% of adversarial jailbreak prompts in real time with less than 0.5% drop in general task benchmark accuracy."
+  },
+  {
+    "id": "2405.10987",
+    "title": "Scalable Automated Red-Teaming of Multimodal Models via Multi-Agent Game-Theoretic Probing",
+    "abstract": "Multimodal vision-language models introduce expanded attack surfaces spanning cross-modal steganography, adversarial typography, and visual prompt injection. We introduce AutoRed-VLM, an automated red-teaming framework framed as a two-player game-theoretic optimization between a multimodal attacker and an alignment verifier. The attacking agent synthesizes subtle visual-textual incongruencies that bypass safety filters, while the verifier iteratively patches safety guardrails. Automated evaluations uncover 400+ novel vulnerabilities in state-of-the-art closed and open multimodal models.",
+    "authors": ["David Chen", "Isabella Rossi", "Kenji Sato"],
+    "categories": ["cs.AI", "cs.CV", "cs.CR"],
+    "year": 2024,
+    "key_findings": "Game-theoretic multimodal adversarial probing discovers 3.8x more actionable safety vulnerabilities compared to standard manual and prompt-only red-teaming suites."
+  },
+  {
+    "id": "2105.06789",
+    "title": "Axiomatic Feature Attribution for Graph Neural Networks via Path-Integrated Shapley Values",
+    "abstract": "Explaining predictions of Graph Neural Networks (GNNs) is difficult because predictions depend on both node features and topological connectivity. We propose Graph-Shapley, an axiomatic feature and edge attribution method rooted in cooperative game theory and path-integrated Shapley values. Our method guarantees efficiency, symmetry, and dummy-player axioms across non-linear message-passing layers through analytical path integration. Evaluations across synthetic benchmark motifs and molecular property datasets show significantly higher fidelity and lower explanation variance than GNNExplainer.",
+    "authors": ["Lucia Moretti", "Rajesh Khurana", "Henrik Berg"],
+    "categories": ["cs.LG", "cs.AI"],
+    "year": 2021,
+    "key_findings": "Path-integrated Shapley value computation on graphs satisfies axiomatic attribution properties while outperforming heuristic perturbation explainers by 18% in motif fidelity."
+  },
+  {
+    "id": "2206.12345",
+    "title": "Mechanistic Interpretability of Transformer Circuits via Sparse Autoencoders",
+    "abstract": "Understanding the internal computations of transformer language models requires disentangling polysemantic neurons into interpretable, monosemantic features. In this paper, we employ overcomplete Sparse Autoencoders (SAEs) trained on intermediate transformer residual streams to isolate discrete concept directions. We map over 50,000 human-interpretable features across diverse domains including syntactic agreement, factual recall, and stylistic cues. We validate causal attribution through targeted feature ablation experiments, demonstrating that isolated circuits directly control downstream model predictions.",
+    "authors": ["Emily Thorne", "Zhiqiang Liu", "Arthur Pendelton"],
+    "categories": ["cs.LG", "cs.CL", "cs.AI"],
+    "year": 2022,
+    "key_findings": "Overcomplete sparse autoencoders successfully isolate 50,000+ monosemantic features from polysemantic residual streams, enabling causal mechanistic circuit mapping."
+  },
+  {
+    "id": "2303.09871",
+    "title": "Faithful Counterfactual Explanations for Deep Visual Classifiers via Causal Diffusion Trajectories",
+    "abstract": "Post-hoc visual explanations such as saliency maps frequently fail sanity checks and highlight non-causal background correlations. We introduce CounterDiff, an explainability framework that generates minimal, semantically plausible counterfactual visual edits using guided score-based diffusion models. By steering reverse diffusion paths along the gradient of the target classification boundary under structural causal constraints, our method produces plausible counterfactual image modifications. Comprehensive human expert evaluation verifies superior clarity and actionable interpretability over baseline gradient-based heatmaps.",
+    "authors": ["Valentin Mercier", "Ananya Deshmukh", "Carlos Hernandez"],
+    "categories": ["cs.CV", "cs.AI", "cs.LG"],
+    "year": 2023,
+    "key_findings": "Causal trajectory-guided diffusion produces realistic visual counterfactuals that reveal true decision boundaries while eliminating misleading visual artifact attributions."
+  },
+  {
+    "id": "2401.14567",
+    "title": "Concept Bottleneck Vision-Language Models with Self-Auditing Uncertainty Boundaries",
+    "abstract": "Concept Bottleneck Models (CBMs) offer innate interpretability by predicting intermediate human-understandable concepts prior to final classification, but they often suffer from concept leakage and prediction errors on rare concepts. We propose SelfAudit-CBM, a vision-language concept bottleneck architecture that incorporates conformal prediction bounds on individual concept predictions. The system automatically highlights low-confidence concept nodes and prompts human experts for interactive intervention when uncertainty exceeds safety thresholds. Benchmarks on medical diagnostic imaging (CXR) and fine-grained classification establish state-of-the-art accuracy with full auditability.",
+    "authors": ["Nadia Benali", "Tobias Meyer", "Priya Nair", "Alexander Petrov"],
+    "categories": ["cs.CV", "cs.AI", "cs.LG"],
+    "year": 2024,
+    "key_findings": "Conformal uncertainty calibration on concept bottleneck representations enables reliable self-auditing with human-in-the-loop validation for high-stakes medical and visual diagnosis."
+  }
+]

@@ -1,0 +1,30 @@
+# Environment & Secrets (NEVER COMMIT)
+.env
+*.env
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# OS Specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files & uploads
+temp_upload.csv
+*.tmp
+*.log
+*.zip
+
+# Streamlit config (optional)
+.streamlit/secrets.toml
