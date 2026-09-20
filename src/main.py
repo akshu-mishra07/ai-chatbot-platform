@@ -551,7 +551,7 @@ with tab2:
                             with st.spinner("Generating..."):
                                 st.json(multimodal_engine.generate_image_description_for_search(image))
 
-            # Image Comparison — Hidden by default
+            # Image Comparison & Generation — Hidden by default in expanders
             st.divider()
             with st.expander("🔄 Image Comparison"):
                 cc1, cc2 = st.columns(2)
@@ -565,6 +565,23 @@ with tab2:
                     if st.button("🔍 Compare", key="compare", use_container_width=True):
                         with st.spinner("Comparing..."):
                             render_answer_box(multimodal_engine.compare_images(i1, i2))
+
+            with st.expander("🎨 AI Image Generation"):
+                st.caption("Generate custom visual content using generative AI.")
+                gen_prompt = st.text_input(
+                    "Describe the image to generate:",
+                    placeholder="e.g., A modern AI customer support assistant robot in a clean office",
+                    key="gen_img_prompt"
+                )
+                if gen_prompt and st.button("✨ Generate Image", key="btn_gen_img", use_container_width=True):
+                    with st.spinner("Generating image with AI..."):
+                        gen_img = multimodal_engine.generate_image(gen_prompt)
+                        if gen_img:
+                            st.image(gen_img, caption=f"Generated: {gen_prompt}", use_container_width=True)
+                            st.success("✅ Image generated successfully!")
+                        else:
+                            st.error("❌ Failed to generate image. Please check network connection.")
+
         else:
             st.warning(f"⚠️ Multi-Modal Engine unavailable. {engine_status.get('error', 'Check API key.')}")
     else:

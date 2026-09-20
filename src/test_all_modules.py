@@ -195,6 +195,16 @@ def test_multimodal_engine():
             details.append(f"{PASS} Metadata generation: {type(result).__name__} with {len(result)} keys")
         except Exception as e:
             details.append(f"{WARN} Metadata error: {str(e)[:80]}")
+
+        # Test image generation
+        try:
+            gen_result = engine.generate_image("a simple test icon", width=128, height=128)
+            if gen_result:
+                details.append(f"{PASS} Image generation: success (size={gen_result.size})")
+            else:
+                details.append(f"{WARN} Image generation: network unavailable")
+        except Exception as e:
+            details.append(f"{WARN} Image generation error: {str(e)[:80]}")
     else:
         details.append(f"{WARN} Engine not available (API key issue?) - {status.get('error', '')}")
 

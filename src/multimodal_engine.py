@@ -302,6 +302,30 @@ class MultiModalEngine:
             logger.error(error_msg)
             return error_msg
 
+    def generate_image(self, prompt: str, width: int = 512, height: int = 512) -> Optional[Image.Image]:
+        """Generate an image from a text prompt.
+
+        Args:
+            prompt: Description of the image to generate.
+            width: Width of generated image.
+            height: Height of generated image.
+
+        Returns:
+            Optional[Image.Image]: Generated PIL Image or None on failure.
+        """
+        import urllib.parse
+        import urllib.request
+        try:
+            encoded_prompt = urllib.parse.quote(prompt.strip())
+            url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={width}&height={height}&nologo=true"
+            req = urllib.request.Request(url, headers={"User-Agent": "AI-Chatbot-Platform/1.0"})
+            with urllib.request.urlopen(req, timeout=25) as resp:
+                data = resp.read()
+                return Image.open(io.BytesIO(data))
+        except Exception as e:
+            logger.error(f"Image generation failed: {e}")
+            return None
+
     def get_status(self) -> Dict[str, Any]:
         """Return engine availability status and supported capabilities.
 
@@ -316,6 +340,7 @@ class MultiModalEngine:
             "ocr_text_extraction",
             "structured_image_indexing",
             "image_comparison",
+            "image_generation",
         ]
         return {
             "available": self.available,
@@ -323,3 +348,4 @@ class MultiModalEngine:
             "capabilities": capabilities if self.available else [],
             "error_message": self.error_message if not self.available else None,
         }
+
