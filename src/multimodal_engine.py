@@ -302,29 +302,95 @@ class MultiModalEngine:
             logger.error(error_msg)
             return error_msg
 
-    def generate_image(self, prompt: str, width: int = 512, height: int = 512) -> Optional[Image.Image]:
-        """Generate an image from a text prompt.
+    def generate_image(self, prompt: str, width: int = 768, height: int = 512, style: str = "photorealistic") -> Optional[Image.Image]:
+        """Generate high-quality, safe, context-accurate AI images.
+
+        1. Contextual Prompt Synthesis: Expands brief prompts into rich, visually descriptive scene prompts.
+        2. Strict Safety Filtering: Injects mandatory SFW, professional, and content-moderation modifiers.
+        3. Multi-Engine Reliability: Uses enhanced generative diffusion with safe=true and nologo=true.
 
         Args:
-            prompt: Description of the image to generate.
-            width: Width of generated image.
-            height: Height of generated image.
+            prompt: User's raw text description or query.
+            width: Image width in pixels (default: 768).
+            height: Image height in pixels (default: 512).
+            style: Target visual aesthetic (photorealistic, 3d_render, digital_art, illustration).
 
         Returns:
             Optional[Image.Image]: Generated PIL Image or None on failure.
         """
         import urllib.parse
         import urllib.request
-        try:
-            encoded_prompt = urllib.parse.quote(prompt.strip())
-            url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={width}&height={height}&nologo=true"
-            req = urllib.request.Request(url, headers={"User-Agent": "AI-Chatbot-Platform/1.0"})
-            with urllib.request.urlopen(req, timeout=25) as resp:
-                data = resp.read()
-                return Image.open(io.BytesIO(data))
-        except Exception as e:
-            logger.error(f"Image generation failed: {e}")
+
+        if not prompt or not prompt.strip():
             return None
+
+        # 1. Block prohibited / NSFW words explicitly
+        nsfw_blacklist = ["nude", "naked", "nsfw", "porn", "erotic", "sex", "boob", "breast", "penis", "nudity"]
+        lower_prompt = prompt.lower()
+        if any(bad in lower_prompt for bad in nsfw_blacklist):
+            logger.warning(f"Rejected unsafe prompt: {prompt}")
+            return None
+
+        # 2. Contextual Prompt Enrichment via Gemini (if available)
+        enhanced_prompt = prompt.strip()
+        if self.available and self.model is not None:
+            try:
+                sys_instruct = (
+                    "You are an expert prompt engineer for generative AI images. "
+                    "Convert the following user concept into a detailed, beautiful, highly accurate scene description.\n"
+                    "Rules:\n"
+                    "- Focus strictly on the exact concept, setting, subjects, and lighting.\n"
+                    "- Ensure the output is completely Safe For Work (SFW), professional, elegant, and appropriate for all ages.\n"
+                    "- Do NOT include any humans in inappropriate attire or explicit scenarios.\n"
+                    "- Keep it under 50 words, concise, comma-separated visual tags.\n"
+                    f"- Style: {style}.\n\n"
+                    f"User Concept: {prompt}\n\n"
+                    "Enhanced Prompt:"
+                )
+                gemini_resp = self.model.generate_content(sys_instruct)
+                if gemini_resp and gemini_resp.text:
+                    candidate = gemini_resp.text.strip().replace("\n", " ")
+                    if len(candidate) > 10:
+                        enhanced_prompt = candidate
+            except Exception as ge:
+                logger.warning(f"Prompt enhancement fallback to template: {ge}")
+
+        # 3. Append mandatory quality and safety guardrails
+        style_keywords = {
+            "photorealistic": "photorealistic, 8k resolution, cinematic lighting, ultra-detailed, professional photography",
+            "3d_render": "3d render, octane render, modern digital art, smooth geometry, clean lighting",
+            "digital_art": "digital painting, concept art, trending on artstation, vivid colors, crisp detail",
+            "illustration": "clean vector illustration, modern graphic design, vibrant, sharp lines",
+        }
+        style_tag = style_keywords.get(style, style_keywords["photorealistic"])
+        final_prompt = (
+            f"{enhanced_prompt}, {style_tag}, fully clothed, professional, safe for work, highly aesthetic, masterpiece"
+        )
+
+        # 4. Fetch image with safe=true, enhance=true, nologo=true
+        try:
+            encoded = urllib.parse.quote(final_prompt.strip())
+            url = f"https://image.pollinations.ai/prompt/{encoded}?width={width}&height={height}&nologo=true&safe=true&enhance=true"
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+            )
+            with urllib.request.urlopen(req, timeout=35) as resp:
+                img_bytes = resp.read()
+                return Image.open(io.BytesIO(img_bytes))
+        except Exception as e:
+            logger.error(f"Image generation request failed: {e}")
+            # Fallback with simplified prompt if enhanced prompt timed out
+            try:
+                simple_prompt = f"{prompt.strip()}, high quality digital art, clean, safe for work, 4k"
+                fallback_url = f"https://image.pollinations.ai/prompt/{urllib.parse.quote(simple_prompt)}?width=512&height=512&nologo=true&safe=true"
+                req_fb = urllib.request.Request(fallback_url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req_fb, timeout=25) as resp_fb:
+                    return Image.open(io.BytesIO(resp_fb.read()))
+            except Exception as fbe:
+                logger.error(f"Fallback image generation also failed: {fbe}")
+                return None
+
 
     def get_status(self) -> Dict[str, Any]:
         """Return engine availability status and supported capabilities.

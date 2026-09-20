@@ -567,25 +567,45 @@ with tab2:
                             render_answer_box(multimodal_engine.compare_images(i1, i2))
 
             with st.expander("🎨 AI Image Generation"):
-                st.caption("Generate custom visual content using generative AI.")
-                gen_prompt = st.text_input(
-                    "Describe the image to generate:",
-                    placeholder="e.g., A modern AI customer support assistant robot in a clean office",
-                    key="gen_img_prompt"
-                )
+                st.caption("Generate safe, photorealistic, and contextually accurate visual content using Generative AI.")
+                img_col1, img_col2 = st.columns([3, 1])
+                with img_col1:
+                    gen_prompt = st.text_input(
+                        "Describe the image to generate:",
+                        placeholder="e.g., A friendly AI customer support specialist assisting students with programming courses",
+                        key="gen_img_prompt"
+                    )
+                with img_col2:
+                    img_style = st.selectbox(
+                        "Style:",
+                        ["photorealistic", "3d_render", "digital_art", "illustration"],
+                        index=0,
+                        key="gen_img_style"
+                    )
+
+                # Context-aware quick prompt suggestions
+                st.caption("💡 **Quick Educational & Customer Service Prompts:**")
+                p_col1, p_col2, p_col3 = st.columns(3)
+                if p_col1.button("🤖 AI Support Robot", key="p_robot", use_container_width=True):
+                    gen_prompt = "A friendly humanoid AI support robot sitting at a customer care desk in a modern tech office"
+                if p_col2.button("💻 Student Coding Lab", key="p_coding", use_container_width=True):
+                    gen_prompt = "Students collaborating in a high-tech computer programming laboratory with code on monitors"
+                if p_col3.button("🎓 Internship Certificate", key="p_cert", use_container_width=True):
+                    gen_prompt = "A gold-embossed graduation certificate and laptop celebrating course completion"
+
                 if gen_prompt and st.button("✨ Generate Image", key="btn_gen_img", use_container_width=True):
-                    with st.spinner("Generating image with AI..."):
+                    with st.spinner("Synthesizing context-accurate image with Generative AI..."):
                         if hasattr(multimodal_engine, "generate_image"):
-                            gen_img = multimodal_engine.generate_image(gen_prompt)
+                            gen_img = multimodal_engine.generate_image(gen_prompt, style=img_style)
                         else:
-                            # Dynamic binding if stale cached instance
                             from multimodal_engine import MultiModalEngine
-                            gen_img = MultiModalEngine.generate_image(multimodal_engine, gen_prompt)
+                            gen_img = MultiModalEngine.generate_image(multimodal_engine, gen_prompt, style=img_style)
                         if gen_img:
-                            st.image(gen_img, caption=f"Generated: {gen_prompt}", use_container_width=True)
-                            st.success("✅ Image generated successfully!")
+                            st.image(gen_img, caption=f"Generated ({img_style}): {gen_prompt}", use_container_width=True)
+                            st.success("✅ Image generated successfully with safety and quality guardrails!")
                         else:
-                            st.error("❌ Failed to generate image. Please check network connection.")
+                            st.error("❌ Failed to generate image. Please ensure prompt is safe and try again.")
+
 
         else:
             st.warning(f"⚠️ Multi-Modal Engine unavailable. {engine_status.get('error', 'Check API key.')}")
