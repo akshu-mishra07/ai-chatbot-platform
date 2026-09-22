@@ -472,26 +472,36 @@ class MedicalQAEngine:
         category = "General Medical"
         sources: List[str] = []
 
-        # 1. Try vector store retrieval if available
+        # 1. Try vector store retrieval if available (with relevance threshold)
         if self.vector_store_ready and self.vector_store is not None:
             try:
-                docs = self.vector_store.similarity_search(question, k=2)
-                if docs:
-                    top_doc = docs[0]
-                    # Extract answer and metadata
-                    metadata = getattr(top_doc, "metadata", {})
-                    answer_text = metadata.get("answer")
-                    category = metadata.get("category", "General Medical")
-                    
-                    if not answer_text:
-                        # Parse page_content if metadata not populated
-                        content = getattr(top_doc, "page_content", "")
-                        if "Answer:" in content:
-                            answer_text = content.split("Answer:", 1)[1].strip()
-                        else:
-                            answer_text = content
+                # Use similarity_search_with_score for relevance thresholding
+                docs_with_scores = self.vector_store.similarity_search_with_score(question, k=3)
+                if docs_with_scores:
+                    top_doc, top_score = docs_with_scores[0]
+                    # FAISS L2 distance: lower = more similar. Threshold ~1.5 for relevance
+                    RELEVANCE_THRESHOLD = 1.5
+                    if top_score <= RELEVANCE_THRESHOLD:
+                        metadata = getattr(top_doc, "metadata", {})
+                        answer_text = metadata.get("answer")
+                        category = metadata.get("category", "General Medical")
+                        medquad_source = metadata.get("source", metadata.get("focus", ""))
+                        
+                        if not answer_text:
+                            content = getattr(top_doc, "page_content", "")
+                            if "Answer:" in content:
+                                answer_text = content.split("Answer:", 1)[1].strip()
+                            else:
+                                answer_text = content
 
-                    sources = [doc.metadata.get("question", doc.page_content[:60]) for doc in docs if hasattr(doc, "metadata")]
+                        # Source attribution from MedQuAD
+                        for doc, score in docs_with_scores:
+                            if score <= RELEVANCE_THRESHOLD:
+                                doc_meta = getattr(doc, "metadata", {})
+                                src_label = doc_meta.get("source", doc_meta.get("question", doc.page_content[:60]))
+                                sources.append(f"[MedQuAD/{doc_meta.get('category', 'General')}] {src_label}")
+                    else:
+                        logger.info(f"Vector search score {top_score:.2f} exceeds threshold {RELEVANCE_THRESHOLD} — low relevance")
             except Exception as e:
                 logger.warning(f"Vector search failed, falling back to keyword search: {e}")
                 answer_text = ""
@@ -499,18 +509,30 @@ class MedicalQAEngine:
         # 2. Fallback to keyword matching if vector store is unavailable or returned empty
         if not answer_text:
             answer_text, category, sources = self._keyword_search_fallback(question)
+            if sources:
+                sources = [f"[MedQuAD/{category}] {s}" for s in sources]
 
-        # 3. Calculate confidence score
+        # 3. If still no answer, acknowledge lack of information
+        if not answer_text or answer_text.strip() == "":
+            answer_text = (
+                "I don't have sufficient information in the MedQuAD knowledge base to answer "
+                "this question accurately. Please consult a qualified healthcare provider or "
+                "rephrase your question with more specific medical terms."
+            )
+            category = "Insufficient Data"
+
+        # 4. Calculate confidence score
         confidence = self.get_confidence_score(question, answer_text)
 
-        # 4. Return structured response
+        # 5. Return structured response with MedQuAD source attribution
         return {
             "answer": answer_text,
             "entities": entities,
             "confidence": confidence,
             "category": category,
             "disclaimer": self.get_safety_disclaimer(),
-            "sources": sources
+            "sources": sources,
+            "dataset": "MedQuAD (https://github.com/abachaa/MedQuAD)"
         }
 
     def search_by_category(self, category: str) -> List[Dict[str, str]]:

@@ -124,11 +124,22 @@ class ArXivExpertEngine:
                 with open(resolved_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     if isinstance(data, list):
-                        logger.info(f"Loaded {len(data)} papers from {resolved_path}")
-                        return data
+                        loaded_papers = data
                     elif isinstance(data, dict) and "papers" in data:
-                        logger.info(f"Loaded {len(data['papers'])} papers from {resolved_path}")
-                        return data["papers"]
+                        loaded_papers = data["papers"]
+                    else:
+                        loaded_papers = []
+
+                    # Filter to CS papers if categories field exists
+                    if loaded_papers and 'categories' in loaded_papers[0]:
+                        cs_papers = [p for p in loaded_papers if any('cs.' in cat for cat in p.get('categories', '').split())]
+                        if cs_papers:
+                            loaded_papers = cs_papers
+
+                    if loaded_papers:
+                        logger.info(f"Loaded {len(loaded_papers)} papers from {resolved_path}")
+                        return loaded_papers
+
             except Exception as e:
                 logger.warning(f"Failed to load dataset from {resolved_path}: {e}")
 
@@ -442,6 +453,31 @@ class ArXivExpertEngine:
                 logger.info("Initialized ChatOpenAI LLM.")
             except Exception as eo:
                 logger.warning(f"OpenAI LLM init failed: {eo}")
+                
+        # Open-source LLM fallback via HuggingFace transformers
+        if self.llm is None:
+            try:
+                from transformers import pipeline as hf_pipeline
+                self._oss_pipeline = hf_pipeline(
+                    'text2text-generation',
+                    model='google/flan-t5-base',
+                    max_length=512,
+                    device='cpu'
+                )
+                # Wrap in a simple callable that matches LangChain LLM interface
+                class FlanT5LLM:
+                    def __init__(self, pipe):
+                        self.pipe = pipe
+                    def __call__(self, prompt: str) -> str:
+                        result = self.pipe(prompt, max_length=512, do_sample=False)
+                        return result[0]['generated_text']
+                    def predict(self, prompt: str) -> str:
+                        return self.__call__(prompt)
+                self.llm = FlanT5LLM(self._oss_pipeline)
+                logger.info('Using open-source Flan-T5 LLM as fallback')
+            except Exception as e:
+                logger.warning(f'Could not load Flan-T5: {e}')
+                self._oss_pipeline = None
 
     def _try_load_vector_db(self):
         """Attempt to load an existing local FAISS vector database."""
@@ -929,7 +965,7 @@ class ArXivExpertEngine:
         # Contextual search considering recent query history
         search_query = question
         if conversation_history:
-            recent_turns = " ".join(conversation_history[-2:])
+            recent_turns = " ".join(conversation_history[-5:])
             search_query = f"{question} {recent_turns}"
 
         top_papers = self.search_papers(search_query, top_k=4)
@@ -956,7 +992,7 @@ class ArXivExpertEngine:
         if self.llm:
             history_text = ""
             if conversation_history:
-                history_text = "Prior Conversation History:\n" + "\n".join(conversation_history[-4:]) + "\n\n"
+                history_text = "Prior Conversation History:\n" + "\n".join(conversation_history[-5:]) + "\n\n"
 
             prompt = (
                 f"You are a domain expert research assistant specializing in Computer Science and AI arXiv papers.\n"

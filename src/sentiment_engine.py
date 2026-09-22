@@ -9,6 +9,8 @@ import logging
 from typing import Dict, List, Tuple, Optional, Any
 from collections import deque
 from datetime import datetime
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from textblob import TextBlob
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -78,6 +80,7 @@ class SentimentEngine:
                 "urgent": 0
             }
         }
+        self.vader = SentimentIntensityAnalyzer()
         logger.info("SentimentEngine initialized with history_size=%d", history_size)
 
     def analyze_sentiment(self, text: str) -> Dict[str, Any]:
@@ -142,9 +145,9 @@ class SentimentEngine:
                 matched_urgency.append(word)
 
         # Check for phrase-level urgency triggers
-        if "asap" in clean_text and "asap" not in matched_urgency:
+        if re.search(r"\basap\b", clean_text) and "asap" not in matched_urgency:
             matched_urgency.append("asap")
-        if "right now" in clean_text and "now" not in matched_urgency:
+        if re.search(r"\bright now\b", clean_text) and "now" not in matched_urgency:
             matched_urgency.append("right now")
 
         pos_count = len(matched_positive)
@@ -152,12 +155,22 @@ class SentimentEngine:
         urg_count = len(matched_urgency)
         total_sentiment_words = pos_count + neg_count
 
-        # Compound score calculation (-1.0 to 1.0)
+        # Keyword score calculation (-1.0 to 1.0)
         if total_sentiment_words > 0:
-            raw_score = (pos_count - neg_count) / total_sentiment_words
-            score = round(max(-1.0, min(1.0, raw_score)), 2)
+            keyword_score = (pos_count - neg_count) / total_sentiment_words
         else:
-            score = 0.0
+            keyword_score = 0.0
+
+        # VADER score
+        vader_scores = self.vader.polarity_scores(text)
+        vader_score = vader_scores["compound"]
+        
+        # TextBlob score
+        blob_score = TextBlob(text).sentiment.polarity
+
+        # 3-way ensemble compound score
+        score = (vader_score * 0.5) + (blob_score * 0.3) + (keyword_score * 0.2)
+        score = round(max(-1.0, min(1.0, score)), 2)
 
         # Urgency flag
         is_urgent = urg_count > 0 or ("!" in text and urg_count > 0)

@@ -160,6 +160,30 @@ class MultiModalEngine:
             logger.error(error_msg)
             return error_msg
 
+    def chat_with_image(self, image: Image.Image, message: str, chat_history: list = None) -> str:
+        """Have a multi-turn conversation about an uploaded image.
+        
+        Args:
+            image: The uploaded PIL image
+            message: Current user message
+            chat_history: List of dicts with 'role' and 'content' keys
+        
+        Returns:
+            str: AI response about the image
+        """
+        context_str = ""
+        if chat_history:
+            for turn in chat_history:
+                role = turn.get("role", "user")
+                content = turn.get("content", "")
+                context_str += f"{role.capitalize()}: {content}\n"
+        
+        return self.generate_text_with_image_context(
+            image=image,
+            conversation_context=context_str.strip(),
+            user_query=message
+        )
+
     def extract_text_from_image(self, image: Image.Image) -> str:
         """OCR-like text extraction from an image using Gemini Vision.
 
@@ -325,9 +349,10 @@ class MultiModalEngine:
             return None
 
         # 1. Block prohibited / NSFW words explicitly
+        import re
         nsfw_blacklist = ["nude", "naked", "nsfw", "porn", "erotic", "sex", "boob", "breast", "penis", "nudity"]
         lower_prompt = prompt.lower()
-        if any(bad in lower_prompt for bad in nsfw_blacklist):
+        if any(re.search(r'\b' + bad + r'\b', lower_prompt) for bad in nsfw_blacklist):
             logger.warning(f"Rejected unsafe prompt: {prompt}")
             return None
 
@@ -364,7 +389,34 @@ class MultiModalEngine:
         directive = style_directives.get(style, style_directives["photorealistic"])
         final_prompt = f"{enhanced_prompt}, {directive}, fully clothed, professional, SFW"
 
-        # 4. Generate using FLUX model with randomized seed
+        # 4. Generate using Gemini Imagen or Flash-exp, fallback to FLUX
+        try:
+            import google.generativeai as genai
+            imagen_model = genai.ImageGenerationModel('imagen-3.0-generate-002')
+            result = imagen_model.generate_images(prompt=final_prompt, number_of_images=1, safety_filter_level='block_most', aspect_ratio='3:4')
+            if result and result.images:
+                img = result.images[0]
+                if hasattr(img, '_pil_image'):
+                    return img._pil_image
+                elif hasattr(img, 'image'):
+                    return Image.open(io.BytesIO(img.image.image_bytes))
+                elif hasattr(img, 'image_bytes'):
+                    return Image.open(io.BytesIO(img.image_bytes))
+        except Exception as e:
+            logger.warning(f"Gemini Imagen generation failed: {e}. Trying gemini-2.0-flash-exp.")
+            try:
+                import google.generativeai as genai
+                model = genai.GenerativeModel('gemini-2.0-flash-exp', generation_config={'response_modalities': ['IMAGE', 'TEXT']})
+                response = model.generate_content(final_prompt)
+                if response and hasattr(response, 'parts'):
+                    for part in response.parts:
+                        if hasattr(part, 'inline_data') and part.inline_data:
+                            if part.inline_data.mime_type.startswith('image/'):
+                                return Image.open(io.BytesIO(part.inline_data.data))
+            except Exception as e2:
+                logger.warning(f"Gemini 2.0 Flash generation failed: {e2}. Falling back to FLUX.")
+
+        # Fallback to FLUX model with randomized seed
         import random
         seed = random.randint(100, 999999)
         try:
@@ -391,6 +443,37 @@ class MultiModalEngine:
                 return None
 
 
+    def chat_with_image(self, image: Image.Image, message: str, chat_history: list = None) -> str:
+        """Have a multi-turn conversation about an uploaded image.
+
+        Maintains conversational context across multiple turns by building
+        a conversation summary from the chat history and using
+        generate_text_with_image_context internally.
+
+        Args:
+            image: The uploaded PIL image to discuss.
+            message: Current user message/question about the image.
+            chat_history: List of dicts with 'role' and 'content' keys.
+
+        Returns:
+            str: AI response about the image in conversational context.
+        """
+        if not self.available or self.model is None:
+            return f"Error: MultiModalEngine is not available. {self.error_message or ''}".strip()
+
+        # Build conversation context from history
+        context_parts = []
+        if chat_history:
+            for turn in chat_history[-5:]:  # Keep last 5 turns for context
+                role = turn.get("role", "user").capitalize()
+                content = turn.get("content", "")
+                context_parts.append(f"{role}: {content}")
+
+        conversation_context = "\n".join(context_parts) if context_parts else "No prior conversation."
+
+        # Delegate to generate_text_with_image_context
+        return self.generate_text_with_image_context(image, conversation_context, message)
+
     def get_status(self) -> Dict[str, Any]:
         """Return engine availability status and supported capabilities.
 
@@ -402,6 +485,7 @@ class MultiModalEngine:
             "image_analysis",
             "visual_qa",
             "conversation_with_images",
+            "multi_turn_image_chat",
             "ocr_text_extraction",
             "structured_image_indexing",
             "image_comparison",
@@ -413,4 +497,3 @@ class MultiModalEngine:
             "capabilities": capabilities if self.available else [],
             "error_message": self.error_message if not self.available else None,
         }
-

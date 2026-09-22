@@ -177,6 +177,14 @@ COMMON_TRANSLATIONS: Dict[str, Dict[str, str]] = {
     }
 }
 
+CULTURAL_RULES = {
+    'es': {'formality': 'formal', 'address': 'usted', 'greeting': 'Estimado/a cliente', 'closing': 'Atentamente', 'honorific': ''},
+    'fr': {'formality': 'formal', 'address': 'vous', 'greeting': 'Cher(e) client(e)', 'closing': 'Cordialement', 'honorific': ''},
+    'de': {'formality': 'formal', 'address': 'Sie', 'greeting': 'Sehr geehrte/r Kunde/in', 'closing': 'Mit freundlichen Grüßen', 'honorific': ''},
+    'hi': {'formality': 'formal', 'address': 'आप', 'greeting': 'प्रिय ग्राहक जी', 'closing': 'धन्यवाद', 'honorific': 'जी'},
+    'en': {'formality': 'neutral', 'address': 'you', 'greeting': 'Dear Customer', 'closing': 'Best regards', 'honorific': ''},
+}
+
 
 class MultilingualEngine:
     """Handles language detection, translation, and culturally appropriate responses."""
@@ -344,7 +352,7 @@ class MultilingualEngine:
         logger.info("Translation to English fallback: returning original text.")
         return text
 
-    def translate_from_english(self, text: str, target_lang: str) -> str:
+    def translate_from_english(self, text: str, target_lang: str, instruction: Optional[str] = None) -> str:
         """Translate English response to target language.
 
         Checks common phrase translations first, then tries LLM-based translation
@@ -353,6 +361,7 @@ class MultilingualEngine:
         Args:
             text: English text to translate.
             target_lang: Language code of target language.
+            instruction: Optional instruction for tone or formality.
 
         Returns:
             Translated response string in target language (or original on fallback).
@@ -372,7 +381,12 @@ class MultilingualEngine:
                 target_name = SUPPORTED_LANGUAGES.get(target_lang, {}).get("name", target_lang)
                 prompt = (
                     f"You are an expert translator. Translate the following text from English "
-                    f"to natural {target_name}. Output only the translated text in {target_name} "
+                    f"to natural {target_name}. "
+                )
+                if instruction:
+                    prompt += f"{instruction} "
+                prompt += (
+                    f"Output only the translated text in {target_name} "
                     f"without explanation or quotation marks:\n\n{text}"
                 )
                 response = self._model.generate_content(prompt)
@@ -384,7 +398,7 @@ class MultilingualEngine:
                 logger.warning("Gemini translation from English failed: %s", e)
 
         logger.info("Translation from English fallback: returning original text.")
-        return text
+        return f"[Translation unavailable - showing English]\n\n{text}"
 
     def process_multilingual_query(self, user_input: str) -> Dict[str, Any]:
         """Process a user query: detect language and translate if needed.
@@ -422,19 +436,30 @@ class MultilingualEngine:
         Returns:
             Dict containing response_text, language, flag, and greeting.
         """
+        rules = CULTURAL_RULES.get(target_lang, CULTURAL_RULES['en'])
+        
         if target_lang != "en":
-            response_text = self.translate_from_english(english_response, target_lang)
+            instruction = f"Please use {rules['formality']} tone and '{rules['address']}' for 'you'."
+            translated_text = self.translate_from_english(english_response, target_lang, instruction=instruction)
         else:
-            response_text = english_response
+            translated_text = english_response
 
         lang_info = SUPPORTED_LANGUAGES.get(target_lang, SUPPORTED_LANGUAGES["en"])
-        greeting = lang_info.get("greeting", "Hello! How can I help you?")
+        greeting = rules['greeting']
+        closing = rules['closing']
+        
+        culturally_wrapped = f"{greeting}\n\n{translated_text}\n\n{closing}"
+        if rules.get('honorific'):
+            culturally_wrapped = culturally_wrapped.replace(greeting, f"{greeting} {rules['honorific']}")
 
         return {
-            "response_text": response_text,
+            "response_text": culturally_wrapped,
             "language": target_lang,
             "flag": lang_info.get("flag", "🇬🇧"),
-            "greeting": greeting
+            "greeting": greeting,
+            "closing": closing,
+            "formality": rules['formality'],
+            "original_english": english_response
         }
 
     def get_greeting(self, lang_code: Optional[str] = None) -> str:
@@ -582,10 +607,11 @@ class MultilingualEngine:
                     logger.warning("Direct LLM multilingual answering failed: %s", ex)
 
         # 5. Localize English answer back to user's native language
-        if target_lang != "en" and raw_english_answer:
-            localized_answer = self.translate_from_english(raw_english_answer, target_lang)
+        if raw_english_answer:
+            formatted = self.format_multilingual_response(raw_english_answer, target_lang)
+            localized_answer = formatted["response_text"]
         else:
-            localized_answer = raw_english_answer or "I apologize, but I could not find information about that. Please contact support."
+            localized_answer = "I apologize, but I could not find information about that. Please contact support."
 
         return {
             "original_query": query,

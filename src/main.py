@@ -296,6 +296,29 @@ multilingual_engine = get_multilingual_engine()
 
 
 # ---------------------------------------------------------------------------
+# Periodic Knowledge Base Auto-Update (runs every 5 minutes)
+# ---------------------------------------------------------------------------
+import time as _time
+
+KB_AUTO_UPDATE_INTERVAL = 300  # seconds (5 minutes)
+MONITORED_SOURCES = [os.path.join(PROJECT_DIR, "dataset", "dataset.csv")]
+
+if "kb_last_auto_update" not in st.session_state:
+    st.session_state.kb_last_auto_update = 0.0
+
+if kb_manager and (_time.time() - st.session_state.kb_last_auto_update) > KB_AUTO_UPDATE_INTERVAL:
+    try:
+        update_result = kb_manager.periodic_update(MONITORED_SOURCES)
+        updated = update_result.get("updated_sources", 0)
+        if updated > 0:
+            st.toast(f"🔄 Knowledge base auto-updated: {updated} source(s) refreshed.", icon="✅")
+        st.session_state.kb_last_auto_update = _time.time()
+    except Exception as _auto_err:
+        logger.warning(f"Auto-update check failed: {_auto_err}")
+        st.session_state.kb_last_auto_update = _time.time()
+
+
+# ---------------------------------------------------------------------------
 # Helper: Render styled components
 # ---------------------------------------------------------------------------
 
@@ -419,9 +442,12 @@ with tab1:
                 target_reply_lang = detected_lang if detected_lang != "en" else st.session_state.current_language
                 st.caption(f"🌐 Auto-detected: **{detected_info.get('flag', '')} {detected_info.get('language_name', 'Language')}** (translated to English for search)")
 
+        # Sentiment analysis — detect AND apply to response
+        sentiment_modifier = None
         if st.session_state.sentiment_active and sentiment_engine:
             sent = sentiment_engine.analyze_sentiment(question)
             render_sentiment_card(sent.get("sentiment", "neutral"), sent.get("score", 0), sent.get("emoji_indicator", ""))
+            sentiment_modifier = sentiment_engine.get_response_modifier(sent)
 
         chain = get_qa_chain()
         if chain:
@@ -430,11 +456,25 @@ with tab1:
                     response = chain({"query": processed_q})
                     answer = response.get("result", "I don't know.")
 
+                    # Apply sentiment-aware response adaptation
+                    if sentiment_modifier:
+                        prefix = sentiment_modifier.get("prefix_suggestion", "")
+                        suffix = sentiment_modifier.get("suffix_suggestion", "")
+                        if prefix:
+                            answer = f"{prefix}\n\n{answer}"
+                        if suffix:
+                            answer = f"{answer}\n\n{suffix}"
+
+                    # Translate to detected language with cultural formatting
                     if target_reply_lang != "en" and multilingual_engine:
                         ml_resp = multilingual_engine.format_multilingual_response(answer, target_reply_lang)
                         answer = ml_resp.get("response_text", answer)
 
                     render_answer_box(answer)
+
+                    # Show escalation warning if sentiment indicates it
+                    if sentiment_modifier and sentiment_modifier.get("escalate", False):
+                        st.warning("⚠️ **Escalation Recommended:** This customer appears highly frustrated. Consider connecting them with a human support agent.")
 
                     with st.expander("📄 Source Documents"):
                         for i, doc in enumerate(response.get("source_documents", [])):
@@ -488,13 +528,17 @@ with tab1:
                         r = kb_manager.add_url_source(url)
                         st.success(f"✅ Added {r.get('added_docs', 0)} docs!")
 
-            if st.button("🔄 Check Updates", key="check_updates", use_container_width=True):
+            if st.button("🔄 Check & Auto-Ingest Updates", key="check_updates", use_container_width=True):
                 sources = [os.path.join(PROJECT_DIR, "dataset", "dataset.csv")]
-                changed = kb_manager.check_for_updates(sources)
-                if changed:
-                    st.warning(f"📢 {len(changed)} source(s) changed!")
-                else:
-                    st.success("✅ All sources up to date.")
+                with st.spinner("Checking for changes and re-ingesting updated sources..."):
+                    update_result = kb_manager.periodic_update(sources)
+                    updated_count = update_result.get("updated_sources", 0)
+                    if updated_count > 0:
+                        st.success(f"✅ Auto-updated {updated_count} source(s). Knowledge base refreshed!")
+                    elif update_result.get("changed_sources"):
+                        st.warning(f"📢 {len(update_result['changed_sources'])} source(s) changed but re-ingestion failed.")
+                    else:
+                        st.success("✅ All sources up to date. No changes detected.")
         else:
             st.info("KB Manager not available.")
 
@@ -596,6 +640,54 @@ with tab2:
                             st.error("❌ Failed to generate image. Please ensure prompt is safe and try again.")
 
 
+            with st.expander("💬 Conversational Image Chat"):
+                st.caption("Upload an image and have a multi-turn conversation about it using Gemini vision.")
+                chat_img_file = st.file_uploader("📷 Upload image for conversation:", type=["jpg", "jpeg", "png", "webp"], key="mm_chat_img")
+
+                if chat_img_file:
+                    from PIL import Image
+                    chat_image = Image.open(chat_img_file)
+                    st.image(chat_image, caption="Image for conversation", use_container_width=True, width=300)
+
+                    # Initialize multi-modal chat history
+                    if "mm_chat_history" not in st.session_state:
+                        st.session_state.mm_chat_history = []
+
+                    # Display chat history
+                    for msg in st.session_state.mm_chat_history:
+                        if msg["role"] == "user":
+                            st.chat_message("user").write(msg["content"])
+                        else:
+                            st.chat_message("assistant").write(msg["content"])
+
+                    # Chat input
+                    chat_msg = st.chat_input("Ask about this image...", key="mm_chat_input")
+                    if chat_msg:
+                        st.session_state.mm_chat_history.append({"role": "user", "content": chat_msg})
+                        st.chat_message("user").write(chat_msg)
+
+                        with st.chat_message("assistant"):
+                            with st.spinner("Analyzing image with context..."):
+                                # Build conversation context from history
+                                context = "\n".join(
+                                    f"{m['role'].capitalize()}: {m['content']}"
+                                    for m in st.session_state.mm_chat_history[-5:]
+                                )
+                                # Use generate_text_with_image_context (previously never called)
+                                if hasattr(multimodal_engine, 'chat_with_image'):
+                                    response = multimodal_engine.chat_with_image(
+                                        chat_image, chat_msg, st.session_state.mm_chat_history
+                                    )
+                                else:
+                                    response = multimodal_engine.generate_text_with_image_context(
+                                        chat_image, context, chat_msg
+                                    )
+                                st.write(response)
+                                st.session_state.mm_chat_history.append({"role": "assistant", "content": response})
+
+                    if st.session_state.mm_chat_history and st.button("🗑️ Clear Chat", key="clear_mm_chat"):
+                        st.session_state.mm_chat_history = []
+                        st.rerun()
 
         else:
             st.warning(f"⚠️ Multi-Modal Engine unavailable. {engine_status.get('error', 'Check API key.')}")

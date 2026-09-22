@@ -133,7 +133,7 @@ def _init_embeddings():
 # ---------------------------------------------------------------------------
 # FAISS Vector DB Paths
 # ---------------------------------------------------------------------------
-VECTORDB_FILE_PATH = "faiss_index"
+VECTORDB_FILE_PATH = os.path.join(_project_dir, "faiss_index")
 
 
 # ---------------------------------------------------------------------------
@@ -160,6 +160,28 @@ def create_vector_db(csv_path: str = "dataset/dataset.csv", vectordb_path: str =
         vectordb = FAISS.from_documents(documents=data, embedding=embeddings)
         vectordb.save_local(vectordb_path)
         logger.info(f"✅ Vector DB created at '{vectordb_path}' with {len(data)} documents.")
+
+        # Record source hash in kb_metadata.json for change detection
+        try:
+            import hashlib, json
+            metadata_path = os.path.join(os.path.dirname(vectordb_path), "kb_metadata.json")
+            metadata = {}
+            if os.path.exists(metadata_path):
+                with open(metadata_path, "r") as f:
+                    metadata = json.load(f)
+            if "document_hashes" not in metadata:
+                metadata["document_hashes"] = {}
+            with open(csv_path, "rb") as f:
+                file_hash = hashlib.sha256(f.read()).hexdigest()
+            metadata["document_hashes"][os.path.abspath(csv_path)] = file_hash
+            metadata["last_rebuild"] = str(os.path.getmtime(csv_path))
+            metadata["total_documents"] = len(data)
+            with open(metadata_path, "w") as f:
+                json.dump(metadata, f, indent=2)
+            logger.info(f"✅ Recorded source hash in {metadata_path}")
+        except Exception as hash_err:
+            logger.warning(f"Could not record hash metadata: {hash_err}")
+
         return True
     except Exception as e:
         logger.error(f"❌ Failed to create vector DB: {e}")
